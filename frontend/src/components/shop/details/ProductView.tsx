@@ -11,6 +11,7 @@ import { get } from '../../../baseUrl';
 
 import { addToCart } from '../../../features/cartSlice';
 import { toggleWishlist } from '../../../features/wishlistSlice';
+import { useAddToCart } from '../../../hooks/useCart';
 import type { RootState } from '../../../store/store';
 import SEO from '../../common/SEO';
 
@@ -75,12 +76,15 @@ const ProductView = () => {
     }
   }, [product]);
 
+  const addToCartMutation = useAddToCart();
+
   const isWishlisted = wishlistItems.some((item: any) => String(item.id) === String(productId));
 
   const handleCart = () => {
     if (!product) return;
+    const targetId = String(productId || product._id);
     dispatch(addToCart({
-      id: productId || product._id,
+      id: targetId,
       name,
       price,
       originalPrice,
@@ -88,6 +92,7 @@ const ProductView = () => {
       image: mainImage || pulse,
       quantity,
     }));
+    addToCartMutation.mutate({ productId: targetId, quantity });
     dispatch(setButton({ cart: true }));
   };
 
@@ -156,8 +161,8 @@ const ProductView = () => {
       priceCurrency: 'INR',
       price: price,
       priceValidUntil: '2027-12-31',
-      availability: product?.inventory?.stockStatus === 'Out Of Stock' 
-        ? 'https://schema.org/OutOfStock' 
+      availability: product?.inventory?.stockStatus === 'Out Of Stock'
+        ? 'https://schema.org/OutOfStock'
         : 'https://schema.org/InStock',
       itemCondition: 'https://schema.org/NewCondition'
     },
@@ -181,7 +186,7 @@ const ProductView = () => {
         />
       )}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        
+
         {/* Left: Gallery (6 cols) */}
         <div className="lg:col-span-6 flex flex-col-reverse sm:flex-row gap-4">
           {/* Thumbnails */}
@@ -191,11 +196,10 @@ const ProductView = () => {
                 <button
                   key={i}
                   type="button"
-                  className={`h-16 w-16 sm:h-20 sm:w-20 rounded-2xl p-1.5 bg-white border-2 cursor-pointer transition-all duration-200 ${
-                    mainImage === item
-                      ? 'border-emerald-700 shadow-md scale-105' 
+                  className={`h-16 w-16 sm:h-20 sm:w-20 rounded-2xl p-1.5 bg-white border-2 cursor-pointer transition-all duration-200 ${mainImage === item
+                      ? 'border-emerald-700 shadow-md scale-105'
                       : 'border-slate-200 hover:border-emerald-300'
-                  }`}
+                    }`}
                   onClick={() => setMainImage(item)}
                 >
                   <img src={item} className="h-full w-full object-contain" alt={`Thumbnail ${i + 1}`} />
@@ -217,8 +221,8 @@ const ProductView = () => {
               )}
             </div>
 
-            <img 
-              src={mainImage} 
+            <img
+              src={mainImage}
               alt={name}
               className="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-300"
             />
@@ -290,11 +294,10 @@ const ProductView = () => {
                     key={w}
                     type="button"
                     onClick={() => setSelectedWeight(w)}
-                    className={`py-2 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      selectedWeight === w
+                    className={`py-2 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer ${selectedWeight === w
                         ? "bg-emerald-800 text-white shadow-md shadow-emerald-900/20 scale-102"
                         : "bg-white text-slate-700 border border-slate-200 hover:border-emerald-300"
-                    }`}
+                      }`}
                   >
                     {w}
                   </button>
@@ -340,11 +343,10 @@ const ProductView = () => {
             <button
               type="button"
               onClick={handleToggleWishlist}
-              className={`h-12 w-12 rounded-2xl border flex items-center justify-center text-lg transition cursor-pointer ${
-                isWishlisted 
-                  ? "bg-red-50 border-red-200 text-red-500 shadow-2xs" 
+              className={`h-12 w-12 rounded-2xl border flex items-center justify-center text-lg transition cursor-pointer ${isWishlisted
+                  ? "bg-red-50 border-red-200 text-red-500 shadow-2xs"
                   : "bg-white border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200"
-              }`}
+                }`}
               aria-label="Add to Wishlist"
             >
               {isWishlisted ? <FaHeart /> : <FaRegHeart />}
@@ -368,10 +370,10 @@ const ProductView = () => {
             <span className="text-xs font-semibold text-slate-400">Share:</span>
             <div className="flex items-center gap-2">
               {socialLinks.map((item, idx) => (
-                <Link 
-                  key={idx} 
-                  to={item.link} 
-                  target="_blank" 
+                <Link
+                  key={idx}
+                  to={item.link}
+                  target="_blank"
                   rel="noreferrer"
                   className="h-8 w-8 rounded-full bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-600 flex items-center justify-center text-xs transition"
                 >

@@ -22,6 +22,7 @@ const userRoute = require("./routes/user/user.route");
 const addressRoute = require("./routes/user/address.route");
 const publicCategoryRoute = require("./routes/public/category.route");
 const publicProductRoute = require("./routes/public/product.route");
+const cartRoute = require("./routes/user/cart.route");
 
 const adminProductRoute = require("./routes/admin/product.route");
 const adminCategoryRoute = require("./routes/admin/category.route");
@@ -134,6 +135,7 @@ app.use("/api/v1/user", addressRoute);
 // Public APIs
 app.use("/api/v1/categories", publicCategoryRoute);
 app.use("/api/v1/products", publicProductRoute);
+app.use("/api/v1/cart", cartRoute)
 
 // Admin APIs
 app.use("/api/v1/admin/products", adminProductRoute);

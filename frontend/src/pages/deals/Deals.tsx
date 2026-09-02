@@ -7,6 +7,7 @@ import SEO from '../../components/common/SEO';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../features/cartSlice';
 import { setButton } from '../../features/commonSlice';
+import { useAddToCart } from '../../hooks/useCart';
 import { useQuery } from '@tanstack/react-query';
 import { get } from '../../baseUrl';
 
@@ -18,6 +19,7 @@ const coupons = [
 
 const Deals = () => {
   const dispatch = useDispatch();
+  const addToCartMutation = useAddToCart();
   const [timeLeft, setTimeLeft] = useState({ hours: 5, minutes: 42, seconds: 18 });
   const [copiedCoupon, setCopiedCoupon] = useState<string | null>(null);
 
@@ -31,8 +33,9 @@ const Deals = () => {
   const products = apiData?.products || [];
 
   const handleClaimDeal = (item: any) => {
+    const targetId = String(item._id || item.id);
     dispatch(addToCart({
-      id: item._id,
+      id: targetId,
       name: item.name,
       price: item.pricing?.sellingPrice || 0,
       originalPrice: item.pricing?.mrp || item.pricing?.sellingPrice || 0,
@@ -40,6 +43,7 @@ const Deals = () => {
       image: item.images?.[0]?.url || pulse,
       quantity: 1,
     }));
+    addToCartMutation.mutate({ productId: targetId, quantity: 1 });
     dispatch(setButton({ cart: true }));
   };
 

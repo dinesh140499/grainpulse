@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../../features/cartSlice';
 import { setButton } from '../../../features/commonSlice';
+import { useAddToCart } from '../../../hooks/useCart';
 import { useQuery } from '@tanstack/react-query';
 import { get } from '../../../baseUrl';
 
@@ -77,9 +78,12 @@ const NewProducts = () => {
 
     const products = apiData?.products?.length > 0 ? apiData.products : DEFAULT_NEW_ARRIVALS;
 
+    const addToCartMutation = useAddToCart();
+
     const handleAddToCart = (item: any) => {
+        const targetId = String(item._id || item.id);
         dispatch(addToCart({
-            id: item._id,
+            id: targetId,
             name: item.name,
             price: item.pricing?.sellingPrice || 0,
             originalPrice: item.pricing?.mrp || item.pricing?.sellingPrice || 0,
@@ -87,6 +91,7 @@ const NewProducts = () => {
             image: item.images?.[0]?.url || pulse,
             quantity: 1,
         }));
+        addToCartMutation.mutate({ productId: targetId, quantity: 1 });
         dispatch(setButton({ cart: true }));
     };
 

@@ -7,6 +7,7 @@ import SEO from '../../components/common/SEO';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../features/cartSlice';
 import { setButton } from '../../features/commonSlice';
+import { useAddToCart } from '../../hooks/useCart';
 import { useQuery } from '@tanstack/react-query';
 import { get } from '../../baseUrl';
 
@@ -68,9 +69,12 @@ const Search = () => {
     inStock: (p.inventory?.stock ?? p.inventory?.stockQuantity ?? 1) > 0,
   }));
 
+  const addToCartMutation = useAddToCart();
+
   const handleAddToCart = (product: ProductItem) => {
+    const targetId = String(product.id);
     dispatch(addToCart({
-      id: product.id,
+      id: targetId,
       name: product.name,
       price: product.price,
       originalPrice: product.originalPrice,
@@ -78,6 +82,7 @@ const Search = () => {
       image: product.image,
       quantity: 1,
     }));
+    addToCartMutation.mutate({ productId: targetId, quantity: 1 });
     dispatch(setButton({ cart: true }));
   };
 

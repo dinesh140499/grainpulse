@@ -12,6 +12,7 @@ import { get } from '../../../baseUrl';
 import { useDispatch } from 'react-redux';
 import { setButton } from '../../../features/commonSlice';
 import { addToCart } from '../../../features/cartSlice';
+import { useAddToCart } from '../../../hooks/useCart';
 
 const DEFAULT_FEATURED = [
     {
@@ -103,9 +104,12 @@ const FeaturedProducts = () => {
         ? productList 
         : productList.filter((p: any) => p.category === activeTab);
 
+    const addToCartMutation = useAddToCart();
+
     const handleAddToCart = (item: any) => {
+        const targetId = String(item.id || item._id);
         dispatch(addToCart({
-            id: item.id,
+            id: targetId,
             name: item.name,
             price: item.price,
             originalPrice: item.originalPrice,
@@ -113,6 +117,7 @@ const FeaturedProducts = () => {
             image: item.image,
             quantity: 1,
         }));
+        addToCartMutation.mutate({ productId: targetId, quantity: 1 });
         dispatch(setButton({ cart: true }));
     };
 

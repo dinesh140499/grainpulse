@@ -6,9 +6,11 @@ import type { RootState } from '../../store/store';
 import { removeFromWishlist, clearWishlist, type WishlistItem } from '../../features/wishlistSlice';
 import { addToCart } from '../../features/cartSlice';
 import { setButton } from '../../features/commonSlice';
+import { useAddToCart } from '../../hooks/useCart';
 
 const Wishlist = () => {
     const dispatch = useDispatch();
+    const addToCartMutation = useAddToCart();
     const items = useSelector((state: RootState) => state.wishlist.items);
 
     const handleRemove = (id: number | string) => {
@@ -20,8 +22,9 @@ const Wishlist = () => {
     };
 
     const handleMoveToCart = (item: WishlistItem) => {
+        const targetId = String(item.id);
         dispatch(addToCart({
-            id: item.id,
+            id: targetId,
             name: item.name,
             price: item.price,
             originalPrice: item.originalPrice,
@@ -29,6 +32,7 @@ const Wishlist = () => {
             image: item.image,
             quantity: 1,
         }));
+        addToCartMutation.mutate({ productId: targetId, quantity: 1 });
         dispatch(removeFromWishlist(item.id));
         dispatch(setButton({ cart: true }));
     };

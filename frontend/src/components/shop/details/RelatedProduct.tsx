@@ -7,9 +7,11 @@ import { get } from '../../../baseUrl';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../../features/cartSlice';
 import { setButton } from '../../../features/commonSlice';
+import { useAddToCart } from '../../../hooks/useCart';
 
 const RelatedProduct = () => {
   const dispatch = useDispatch();
+  const addToCartMutation = useAddToCart();
 
   // Query products from live database
   const { data: apiData } = useQuery({
@@ -36,8 +38,9 @@ const RelatedProduct = () => {
 
     const handleAddToCart = (e: React.MouseEvent) => {
       e.preventDefault();
+      const targetId = String(item._id);
       dispatch(addToCart({
-        id: item._id,
+        id: targetId,
         name: item.name,
         price,
         originalPrice,
@@ -45,6 +48,7 @@ const RelatedProduct = () => {
         image,
         quantity: 1,
       }));
+      addToCartMutation.mutate({ productId: targetId, quantity: 1 });
       dispatch(setButton({ cart: true }));
     };
 

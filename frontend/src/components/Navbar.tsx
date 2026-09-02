@@ -12,10 +12,12 @@ import SearchFilter from "./reusable/SearchFilter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { get } from "../baseUrl";
 import { logoutUser } from "../features/authSlice";
+import { useCart } from "../hooks/useCart";
 import Alert from "./common/Alert";
 import { useState } from "react";
 
 const Navbar = ({ setToggleSidebar }: SubMenuProps) => {
+  useCart();
   const [alertData, setAlertData] = useState({
     message: "",
     variant: "" as "success" | "error",

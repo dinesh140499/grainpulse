@@ -10,19 +10,29 @@ http:
     type: form-urlencoded
     data:
       - name: firstname
-        value: priya
+        value: Priya
+      - name: lastname
+        value: Kumar
       - name: company_name
-        value: fipkart
+        value: Flipkart
       - name: street
-        value: peeraghari
+        value: Peeragarhi
+      - name: city
+        value: New Delhi
+      - name: state
+        value: Delhi
       - name: country
-        value: india
-      - name: states
-        value: delhi
+        value: India
       - name: zip_code
         value: "110083"
-      - name: lastname
-        value: kumar
+      - name: phone
+        value: "9876543210"
+      - name: landmark
+        value: Near Metro Station
+      - name: type
+        value: home
+      - name: isDefault
+        value: "true"
   auth: inherit
 
 settings:

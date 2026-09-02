@@ -1,7 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import pulse from "../assets/images/products/pulse.png";
-import grains from "../assets/images/products/grains.png";
-import oils from "../assets/images/products/oils.png";
 
 export interface CartItem {
   id: number | string;
@@ -24,38 +22,28 @@ interface CartState {
   coupon: CouponState;
 }
 
-const initialItems: CartItem[] = [
-  {
-    id: 1,
-    name: "Organic Toor Dal (Unpolished)",
-    weight: "1 Kg",
-    price: 165,
-    originalPrice: 195,
-    quantity: 2,
-    image: pulse,
-  },
-  {
-    id: 2,
-    name: "Himalayan Red Rice (Single Origin)",
-    weight: "1 Kg",
-    price: 210,
-    originalPrice: 260,
-    quantity: 1,
-    image: grains,
-  },
-  {
-    id: 3,
-    name: "Cold-Pressed Kachi Ghani Mustard Oil",
-    weight: "1 Litre",
-    price: 175,
-    originalPrice: 220,
-    quantity: 1,
-    image: oils,
-  },
-];
+const getInitialCartItems = (): CartItem[] => {
+  try {
+    const stored = localStorage.getItem("cart");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error("Error reading cart from localStorage:", e);
+  }
+  return [];
+};
+
+const saveCartToStorage = (items: CartItem[]) => {
+  try {
+    localStorage.setItem("cart", JSON.stringify(items));
+  } catch (e) {
+    console.error("Error saving cart to localStorage:", e);
+  }
+};
 
 const initialState: CartState = {
-  items: initialItems,
+  items: getInitialCartItems(),
   coupon: {
     code: "",
     discount: 0,
@@ -67,6 +55,10 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    setCartItems: (state, action: PayloadAction<CartItem[]>) => {
+      state.items = action.payload;
+      saveCartToStorage(state.items);
+    },
     addToCart: (
       state,
       action: PayloadAction<{
@@ -94,6 +86,7 @@ const cartSlice = createSlice({
           image,
         });
       }
+      saveCartToStorage(state.items);
     },
     updateQuantity: (
       state,
@@ -108,13 +101,16 @@ const cartSlice = createSlice({
           item.quantity = quantity;
         }
       }
+      saveCartToStorage(state.items);
     },
     removeFromCart: (state, action: PayloadAction<number | string>) => {
       state.items = state.items.filter((item) => String(item.id) !== String(action.payload));
+      saveCartToStorage(state.items);
     },
     clearCart: (state) => {
       state.items = [];
       state.coupon = { code: "", discount: 0, applied: false };
+      saveCartToStorage(state.items);
     },
     applyCoupon: (state, action: PayloadAction<string>) => {
       const code = action.payload.trim().toUpperCase();
@@ -147,6 +143,7 @@ const cartSlice = createSlice({
 });
 
 export const {
+  setCartItems,
   addToCart,
   updateQuantity,
   removeFromCart,
@@ -156,3 +153,4 @@ export const {
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
+

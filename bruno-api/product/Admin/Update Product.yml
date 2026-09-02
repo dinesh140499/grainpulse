@@ -21,7 +21,10 @@ http:
       - name: description
         type: text
         value: Premium long-grain basmati rice with rich aroma and excellent cooking quality. Ideal for biryani, pulao, and daily meals.
-      - name: price
+      - name: mrp
+        type: text
+        value: "1350"
+      - name: sellingPrice
         type: text
         value: "1250"
       - name: discountPrice

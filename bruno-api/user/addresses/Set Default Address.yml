@@ -1,0 +1,15 @@
+info:
+  name: Set Default Address
+  type: http
+  seq: 6
+
+http:
+  method: PATCH
+  url: "{{Local_URL}}user/address/6a1328f802ddc2fb77b39efa/default"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

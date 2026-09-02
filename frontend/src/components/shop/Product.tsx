@@ -9,6 +9,7 @@ import { get } from '../../baseUrl';
 import { useDispatch } from 'react-redux';
 import { setButton } from '../../features/commonSlice';
 import { addToCart } from '../../features/cartSlice';
+import { useAddToCart } from '../../hooks/useCart';
 
 type ProductProps = {
     filterBtnToggle: boolean;
@@ -96,9 +97,12 @@ const Product: React.FC<ProductProps> = ({ filterBtnToggle, setFilterBtnToggle, 
             return 0;
         });
 
+    const addToCartMutation = useAddToCart();
+
     const handleAddToCart = (item: any) => {
+        const targetId = String(item.id || item._id);
         dispatch(addToCart({
-            id: item.id,
+            id: targetId,
             name: item.name,
             price: item.price,
             originalPrice: item.originalPrice,
@@ -106,6 +110,7 @@ const Product: React.FC<ProductProps> = ({ filterBtnToggle, setFilterBtnToggle, 
             image: item.image,
             quantity: 1,
         }));
+        addToCartMutation.mutate({ productId: targetId, quantity: 1 });
         dispatch(setButton({ cart: true }));
     };
 
@@ -113,17 +118,17 @@ const Product: React.FC<ProductProps> = ({ filterBtnToggle, setFilterBtnToggle, 
         <div>
             {/* Toolbar */}
             <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                
+
                 {/* Left: Mobile Filter Button & Results Info */}
                 <div className="flex items-center gap-3">
-                    <button 
+                    <button
                         className="lg:hidden flex items-center gap-2 bg-emerald-800 text-white text-xs font-semibold py-2 px-3.5 rounded-xl shadow-xs cursor-pointer"
                         onClick={() => setFilterBtnToggle(!filterBtnToggle)}
                     >
                         <IoFilter className="text-sm" />
                         <span>Filters</span>
                     </button>
-                    
+
                     <p className="text-xs sm:text-sm text-slate-600">
                         Showing <strong className="text-slate-900 font-bold">{displayProducts.length}</strong> of {totalCount} items
                     </p>
@@ -132,7 +137,7 @@ const Product: React.FC<ProductProps> = ({ filterBtnToggle, setFilterBtnToggle, 
                 {/* Right: Sort By Dropdown */}
                 <div className="flex items-center gap-2 self-end sm:self-auto text-xs sm:text-sm text-slate-600">
                     <span className="font-medium whitespace-nowrap">Sort by:</span>
-                    <select 
+                    <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
                         className="bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs sm:text-sm font-semibold text-slate-800 outline-none focus:border-emerald-600 cursor-pointer transition"
@@ -164,19 +169,19 @@ const Product: React.FC<ProductProps> = ({ filterBtnToggle, setFilterBtnToggle, 
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-5">
                 {isLoading && <ProductCardSkeleton count={8} />}
                 {!isLoading && displayProducts.map((item) => {
-                    const discount = item.originalPrice > item.price 
+                    const discount = item.originalPrice > item.price
                         ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
                         : 0;
 
                     return (
                         <div key={item.id} className="bg-white rounded-2xl border border-slate-100 p-3 sm:p-4 shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all duration-300 card-hover-effect flex flex-col justify-between">
-                            
+
                             <div>
                                 {/* Image Container with Badges */}
                                 <Link to={`/categories/${item.id}`} className="block relative h-36 sm:h-44 w-full bg-slate-50 rounded-xl overflow-hidden mb-3 p-2">
                                     {item.badge && (
                                         <span className="absolute top-2 left-2 bg-emerald-800 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs z-10">
-                                             {item.badge}
+                                            {item.badge}
                                         </span>
                                     )}
                                     {discount > 0 && (
@@ -228,7 +233,7 @@ const Product: React.FC<ProductProps> = ({ filterBtnToggle, setFilterBtnToggle, 
                                         </div>
                                     )}
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => handleAddToCart(item)}
                                     className="bg-emerald-800 hover:bg-emerald-900 active:scale-95 text-white p-2 sm:px-3 sm:py-1.5 rounded-xl text-xs font-semibold shadow-xs hover:shadow-md transition duration-150 flex items-center gap-1.5 cursor-pointer"
                                     aria-label={`Add ${item.name} to cart`}

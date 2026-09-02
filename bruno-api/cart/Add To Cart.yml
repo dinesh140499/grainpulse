@@ -1,0 +1,24 @@
+info:
+  name: Add To Cart
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{Local_URL}}cart"
+  body:
+    type: json
+    data: |-
+      {
+        "productId": "6a4f3ac451083286280b04f2",
+        "quantity": 1
+      }
+  auth:
+    type: bearer
+    token: ""
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
