@@ -11,6 +11,8 @@ exports.addToCart = asyncHandler(async (req, res) => {
         })
     }
     const cart = await cartService.addToCart(req.user._id, req.body)
+
+    
     res.status(200).json({
         success: true,
         cart

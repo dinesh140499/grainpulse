@@ -2,7 +2,7 @@ const Cart = require('../../models/cartSchema')
 
 class CartRepository {
     async getCartByUser(userId) {
-        return await Cart.findOne({ user: userId }).populate('items.product', "name slug sku pricing images inventory isActive");
+        return await Cart.findOne({ user: userId })
     }
 
     async findCartByUserId(userId){

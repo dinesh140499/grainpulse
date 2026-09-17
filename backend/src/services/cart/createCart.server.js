@@ -7,23 +7,29 @@ exports.addToCart = async (userId, cartData) => {
     const { productId, quantity } = cartData;
     const existingCart = await cartReadRepository.findCartByUserId(userId);
     const productExist = await productReadRepository.findById(productId);
-    
+
     if (!productExist) {
         throw new ErrorHandler("Product not found", 404);
     }
 
     if (!existingCart) {
         await cartRepository.create({ userId, productId, quantity: Number(quantity) });
-        await cartRepository.save()
+
+        return {
+            message: "Product added to cart successfully",
+            existingCart
+        }
     } else {
-        const itemIndex = existingCart.items.findIndex(
+        const existingProduct = existingCart.items.find(
             (item) => item.product.toString() === productId.toString()
         );
 
-        if (itemIndex > -1) {
-            existingCart.items[itemIndex].quantity += Number(quantity);
-        } else {
-            existingCart.items.push({ product: productId, quantity: Number(quantity) });
+        existingProduct.quantity += Number(quantity)
+        await existingCart.save()
+
+        return {
+            message: "Product updated in cart successfully",
+            existingCart
         }
     }
 
